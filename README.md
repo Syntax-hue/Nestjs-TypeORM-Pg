@@ -8,7 +8,8 @@
 [linux-url]: https://travis-ci.org/nestjs/nest
 ## Description
 
-Please use this repository as an excellent example of creating REST API with Nestjs and TypeORM.
+Please use this repository as an good example of creating REST API with Nestjs and TypeORM.
+Here you can find best practices, making relations between entities, working with class-validator and class-transformer and many more.
 
 ## Installation
 
