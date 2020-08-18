@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
+// @Index(['name', 'type']) // another way to create indexed fields.
 @Entity()
 export class Event {
     @PrimaryGeneratedColumn()
@@ -8,6 +9,7 @@ export class Event {
     @Column()
     type: string;
 
+    @Index() // this makes search on name to be based on indexes -> much faster
     @Column()
     name: string;
 

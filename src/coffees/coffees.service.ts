@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { Coffee } from './entities/coffee.entity';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee-dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Flavor } from './entities/flavor.entity';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { Event } from '../events/entities/event.entity';
 
 @Injectable()
 export class CoffeesService {
@@ -15,7 +16,8 @@ export class CoffeesService {
     private readonly coffeeRepository: Repository<Coffee>,
 
     @InjectRepository(Flavor)
-    private readonly flavorRepository: Repository<Flavor>) { }
+    private readonly flavorRepository: Repository<Flavor>,
+    private readonly connection: Connection) { }
 
   async findAll(paginationQuery: PaginationQueryDto): Promise<Coffee[]> {
     const { limit, offset } = paginationQuery;
@@ -71,6 +73,32 @@ export class CoffeesService {
   async remove(id: string): Promise<Coffee> {
     const coffee = await this.coffeeRepository.findOne(id);
     return await this.coffeeRepository.remove(coffee);
+  }
+
+  async recommendCoffee(coffee: Coffee) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      coffee.recommendations++;
+
+      const recommenedEvent = new Event();
+      recommenedEvent.name = 'recommend_coffee';
+      recommenedEvent.type = 'coffee';
+      recommenedEvent.payload = { coffeeId: coffee.id };
+
+      await queryRunner.manager.save(coffee);
+      await queryRunner.manager.save(recommenedEvent);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release()
+    }
+
   }
 
   private async preloadFlavorByName(name: string): Promise<Flavor> {
