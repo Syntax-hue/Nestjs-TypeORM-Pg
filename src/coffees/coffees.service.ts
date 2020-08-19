@@ -20,7 +20,7 @@ export class CoffeesService {
     private readonly connection: Connection,
     @Inject(COFFEE_BRANDS) coffeeBrands: string[] // injecing non-class-based Provider Tokens
     ) {
-      console.log(coffeeBrands)
+      console.log(coffeeBrands) // this will fire second
     }
 
   async findAll(paginationQuery: PaginationQueryDto): Promise<Coffee[]> {
