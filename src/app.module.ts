@@ -6,7 +6,7 @@ import { CoffeesModule } from './coffees/coffees.module';
 import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import Joi from '@hapi/joi';
+import * as Joi from '@hapi/joi';
 
 @Module({
   imports: [
