@@ -14,10 +14,11 @@ export class HttpExceptionFilter<T extends HttpException>
     const error =
       typeof response === 'string'
         ? { message: exceptionResponse }
-        : { exceptionResponse };
+        : ( exceptionResponse as object );
 
     response.status(status).json({
-      ...error
+      ...error,
+      timeStamp: new Date().toISOString(),
     })
   }
 }
